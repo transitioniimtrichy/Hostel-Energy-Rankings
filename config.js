@@ -8,7 +8,7 @@ const CFG={
   SHEET_CSV_URL:"https://docs.google.com/spreadsheets/d/e/2PACX-1vSghDKrqOdgVBOZcKvNTp5bY0lKUw9x3AgdxsMf8cWeB-QwlOGIMxCumKzpkIZbmaWnooUwPU_-w3jS/pub?output=csv",
 
   // Link to your Google Form for feedback (leave "" until the form is ready)
-  FEEDBACK_URL:"",
+  FEEDBACK_URL:"https://docs.google.com/forms/d/e/1FAIpQLSd7OcsXOf2oQV6UBnGiBxpH93ivaytIlR-bU0y56PyM7QaOpw/viewform?usp=publish-editor",
 
   // Conversion factors. See the "Conversions and method" page for what each means.
   EF:0.727,     // kg of CO2 per kWh of electricity (India grid average, CEA)
