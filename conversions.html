@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conversions and method · Transition, IIM Trichy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="hero mini"><div class="w">
+  <div class="brand"><img class="logo" data-logo alt="Transition logo"><div><h2>Transition</h2><p>The Sustainability &amp; Climate Strategy SIG, IIM Trichy</p></div></div>
+  <p class="kick"><a href="index.html" style="color:inherit">&larr; Back to hostel ranking</a></p>
+  <h1>How we turn kWh into everyday terms</h1>
+  <p class="lede">A number like 5,050 kWh is hard to picture. These are the formulas we use to explain it as CO₂, trees, car travel, phone charges, AC hours and coal.</p>
+</div></header>
+<main class="w">
+  <section>
+    <h3>The formulas</h3>
+    <p class="sub">Every comparison starts from the electricity a hostel used (kWh). The factors come from <code>config.js</code>, so this table always matches the ranking page.</p>
+    <div class="tw"><table><thead><tr><th>What we show</th><th>Formula</th><th>Factor used</th><th>Where the factor comes from</th></tr></thead><tbody id="tb"></tbody></table></div>
+  </section>
+  <section>
+    <h3>How the ranking works</h3>
+    <div class="how"><ul>
+      <li><b>Per capita use</b> = total kWh ÷ number of residents. The hostel with the lowest figure is the winner, because it is fair to hostels of different sizes.</li>
+      <li><b>Total use</b> = total kWh the hostel used in the month.</li>
+      <li><b>Use per room</b> = total kWh ÷ number of rooms.</li>
+      <li><b>Energy saved</b> = (last month's kWh per resident − this month's kWh per resident) × this month's residents. It starts from the second month of data. A hostel that gains residents is not penalised.</li>
+    </ul></div>
+  </section>
+  <section>
+    <h3>Try it yourself</h3>
+    <p class="sub">Type any amount of electricity to see what it means.</p>
+    <div class="calc"><label for="kw"><b>Energy (kWh)</b></label><input id="kw" type="number" min="0" value="1000"></div>
+    <div class="eq" id="eq"></div>
+  </section>
+  <section><div class="how"><h3>A note on accuracy</h3><p>The CO₂ factor is the national grid average, so it is a good estimate but not a measurement of our own campus supply. The other factors (trees, car, phone, AC, coal) are rough everyday averages, meant to make numbers relatable rather than to be exact. To change any factor, edit <code>config.js</code>.</p></div></section>
+</main>
+<footer id="ft"></footer>
+<script src="config.js"></script>
+<script src="common.js"></script>
+<script>
+const nf=(n,d=0)=>n.toLocaleString("en-IN",{maximumFractionDigits:d,minimumFractionDigits:d});
+const ROWS=[
+ ["CO₂ emitted or avoided","kWh × factor","EF","kg CO₂ per kWh","India's national grid average, from the Central Electricity Authority (CEA) CO₂ baseline database. Update it when CEA publishes a newer figure."],
+ ["Trees needed for a year","kg CO₂ ÷ factor","TREE","kg CO₂ absorbed per tree per year","A commonly used average for a mature tree. Real values vary by species and age."],
+ ["Car travel","kg CO₂ ÷ factor","CAR","kg CO₂ per km","A typical petrol car. Real values vary by model."],
+ ["Phone charges","kWh ÷ factor","PHONE","kWh per full charge","A typical smartphone battery of about 15 Wh, including charger losses."],
+ ["AC hours","kWh ÷ factor","AC","kWh per hour","A 1.5-ton AC running at about 1.5 kW."],
+ ["Coal burned","kWh × factor","COAL","kg of coal per kWh generated","A rough average for coal-fired generation. Treat as an estimate."]];
+document.getElementById("tb").innerHTML=ROWS.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td><b>${CFG[r[2]]}</b> ${r[3]}</td><td>${r[4]}</td></tr>`).join("");
+function calc(){const k=Math.max(0,parseFloat(document.getElementById("kw").value)||0),c=k*CFG.EF;
+ document.getElementById("eq").innerHTML=[[nf(c),"kg of CO₂"],[nf(c/CFG.TREE,1),"trees needed for a year to absorb it"],[nf(c/CFG.CAR),"km of petrol car travel"],[nf(k/CFG.PHONE),"phone charges"],[nf(k/CFG.AC),"hours of a 1.5-ton AC"],[nf(k*CFG.COAL),"kg of coal burned"]].map(([a,b])=>`<div><strong>${a}</strong><span>${b}</span></div>`).join("")}
+document.getElementById("kw").addEventListener("input",calc);calc();renderFooter();
+</script>
+</body>
+</html>
