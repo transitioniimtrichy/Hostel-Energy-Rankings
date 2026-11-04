@@ -12,3 +12,8 @@ function renderFooter(win){
    <div><h4>Junior members</h4><ul>${li(CFG.JUNIORS)}</ul></div>
    <div><h4>Links</h4><nav><a href="index.html">Hostel energy ranking</a><a href="conversions.html">Conversions and method</a>${fb}</nav></div></div>`;
 }
+// Gentle reveal of sections as you scroll (skipped if the visitor prefers reduced motion)
+if(window.matchMedia&&!matchMedia("(prefers-reduced-motion:reduce)").matches&&"IntersectionObserver" in window){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.05});
+  document.querySelectorAll("main section").forEach(s=>{s.classList.add("rv");io.observe(s)});
+}

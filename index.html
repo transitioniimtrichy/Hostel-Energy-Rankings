@@ -6,51 +6,38 @@
 <title>Hostel Energy Ranking · Transition, IIM Trichy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="hero">
   <img class="photo" src="hero.jpg" alt="" onerror="this.remove()">
-  <svg class="scene" viewBox="0 0 1200 180" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-    <circle cx="170" cy="60" r="34" fill="#D0F24C" opacity=".9"/>
-    <path d="M0 120 Q200 70 420 112 T820 100 T1200 110 V180 H0Z" fill="#0A6A2E"/>
-    <path d="M0 150 Q260 112 520 142 T1200 134 V180 H0Z" fill="#0F7E38"/>
-    <g fill="#EAF7BE"><rect x="607" y="52" width="5" height="64"/><rect x="967" y="30" width="6" height="86"/></g>
-    <g fill="#EAF7BE"><g class="blades"><path d="M609 52 L604 12 L614 12Z M609 52 L644 72 L639 80Z M609 52 L574 72 L579 80Z"/></g>
-    <g class="blades"><path d="M970 30 L964 -14 L976 -14Z M970 30 L1010 54 L1004 62Z M970 30 L930 54 L936 62Z"/></g></g>
-    <g fill="#043B19" stroke="#D0F24C" stroke-width="1.5"><path d="M260 150l22-22h66l-22 22z"/><path d="M360 148l22-22h66l-22 22z"/><path d="M460 150l22-22h66l-22 22z"/></g>
-    <g stroke="#D0F24C" stroke-width="1" opacity=".7"><path d="M271 139h66M293 128l-22 22M315 128l-22 22"/></g>
-  </svg>
   <div class="w">
-    <div class="brand"><img class="logo" data-logo alt="Transition logo"><div><h2>Transition</h2><p>The Sustainability &amp; Climate Strategy SIG, IIM Trichy</p></div></div>
+    <div class="bar-top"><a class="brand" href="index.html"><img class="logo" data-logo alt="Transition logo"><span><b>Transition</b><small>The Sustainability &amp; Climate Strategy SIG, IIM Trichy</small></span></a><nav class="top" aria-label="Main"><a href="#leaderboard">Leaderboard</a><a href="#analysis">Analysis</a><a href="conversions.html">Method</a></nav></div>
     <div class="months" id="months" role="group" aria-label="Choose month"></div>
     <p class="kick" id="kick"></p>
     <h1 id="h1"></h1><p class="lede" id="lede"></p>
     <div class="cards">
       <div class="card"><small>Overall consumption</small><div class="n" id="tot"></div><small id="totm"></small></div>
-      <div class="card win"><svg width="62" height="62" viewBox="0 0 62 62" aria-hidden="true"><circle cx="31" cy="31" r="30" fill="#065223"/><path d="M20 16h22v9a11 11 0 0 1-22 0zM20 19h-5v3a7 7 0 0 0 7 7M42 19h5v3a7 7 0 0 1-7 7M31 36v7M24 46h14" fill="none" stroke="#D0F24C" stroke-width="3" stroke-linecap="round"/></svg>
-        <div><small>Winner: lowest use per resident</small><div class="n" id="wn"></div><small id="wm"></small></div></div>
+      <div class="card win"><small>Winner, lowest use per resident</small><div class="n" id="wn"></div><small id="wm"></small></div>
     </div>
   </div>
 </header>
 
 <main class="w">
   <div id="notice"></div>
-  <section>
-    <h3>Leaderboard</h3>
-    <p class="sub" id="bs"></p>
+  <section id="leaderboard">
+    <div class="sh"><span class="no">01</span><div><h3>Leaderboard</h3><p class="sub" id="bs"></p></div></div>
     <div class="seg" id="seg" role="group" aria-label="Rank by">
       <button data-m="rate">Per capita use</button><button data-m="kwh">Total use</button><button data-m="saved">Energy saved</button><button data-m="room">Use per room</button>
     </div>
     <div class="board" id="board"></div>
   </section>
 
-  <section>
-    <h3>Data analysis</h3>
-    <p class="sub">Choose a hostel to see what its energy means in everyday terms, then compare it with the others. Click any bar, line or dot to switch hostel.</p>
+  <section id="analysis">
+    <div class="sh"><span class="no">02</span><div><h3>Data analysis</h3><p class="sub">Choose a hostel to see what its energy means in everyday terms, then compare it with the others. Click any bar, line or dot to switch hostel.</p></div></div>
     <div class="chips" id="chips" role="group" aria-label="Choose hostel"></div>
-    <p class="sub" id="eqt" style="margin-bottom:10px"></p>
+    <p id="eqt"></p>
     <div class="eq" id="eq"></div>
     <div class="panel"><h4>Compare hostels on one parameter</h4><p>Pick a parameter; all hostels are shown for the selected month.</p>
       <select id="param" aria-label="Parameter"></select><div id="c1"></div></div>
@@ -58,7 +45,7 @@
     
   </section>
 
-  <section><div class="how"><h3>How we calculate this</h3><p>The winner is the hostel with the lowest energy use per resident, so bigger hostels are not at a disadvantage. The <a href="conversions.html">Conversions and method</a> page shows every formula behind the CO₂, tree, car, phone, AC and coal comparisons.</p></div></section>
+  <section id="method"><div class="how"><h3>How we calculate this</h3><p>The winner is the hostel with the lowest energy use per resident, so bigger hostels are not at a disadvantage. The <a href="conversions.html">Conversions and method</a> page shows every formula behind the CO₂, tree, car, phone, AC and coal comparisons.</p></div></section>
 </main>
 
 <footer id="ft"></footer>
