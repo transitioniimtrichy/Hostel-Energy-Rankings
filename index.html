@@ -90,9 +90,10 @@ function calc(m){const i=months.indexOf(m),pm=i>0?months[i-1]:null;
  return rows.filter(r=>r.month===m).map(r=>{const p=pm&&rows.find(x=>x.month===pm&&x.hostel===r.hostel),rate=r.kwh/r.res;
   return{...r,rate,room:r.kwh/r.rooms,pm,saved:p?(p.kwh/p.res-rate)*r.res:null,pct:p?(rate/(p.kwh/p.res)-1)*100:null}})}
 const co2=k=>k*CFG.EF;
-var WL=[];const typeOf=n=>(CFG.ROOM_TYPE||{})[(n.match(/\d+/)||[])[0]];
+var WL=[];const DEF_ROOM={1:"Single",2:"Double",3:"Double",4:"Single",5:"Single",6:"Double",7:"Double",8:"Single"},DEF_SEX={1:"Girls",2:"Boys",3:"Boys",4:"Girls",5:"Girls",6:"Girls",7:"Boys",8:"Boys"};
+const typeOf=n=>(CFG.ROOM_TYPE||DEF_ROOM)[(n.match(/\d+/)||[])[0]];
 function win(t,idn,idm){const g=D.filter(x=>typeOf(x.hostel)===t);const c=$(idn).closest(".card");if(!g.length){c.style.display="none";return null}c.style.display="";const w=g.slice().sort((a,b)=>a.rate-b.rate)[0],avg=g.reduce((s,x)=>s+x.kwh,0)/g.reduce((s,x)=>s+x.res,0);$(idn).textContent=w.hostel;$(idm).textContent=`${nf(w.rate,1)} kWh per resident, ${nf((1-w.rate/avg)*100)}% below the ${t.toLowerCase()}-occupancy average`;return w}
-const tag=n=>{const g=(CFG.HOSTEL_TYPE||{})[(n.match(/\d+/)||[])[0]];return g?`<span class="tag ${g.toLowerCase()}">${g}</span>`:""};
+const tag=n=>{const g=(CFG.HOSTEL_TYPE||DEF_SEX)[(n.match(/\d+/)||[])[0]];return g?`<span class="tag ${g.toLowerCase()}">${g}</span>`:""};
 const eqs=k=>[[nf(co2(k)),"kg of CO₂"],[nf(co2(k)/CFG.TREE,1),"trees needed for a year to absorb it"],[nf(co2(k)/CFG.CAR),"km of petrol car travel"],[nf(k/CFG.PHONE),"phone charges"],[nf(k/CFG.AC),"hours of a 1.5-ton AC"],[nf(k*CFG.COAL),"kg of coal burned"]];
 const PARAMS={rate:["Energy used per resident (kWh)",h=>h.rate,1],kwh:["Total energy used (kWh)",h=>h.kwh,0],co2:["CO₂ emitted (kg)",h=>co2(h.kwh),0],trees:["Trees to absorb it for a year",h=>co2(h.kwh)/CFG.TREE,1],car:["Car km with the same CO₂",h=>co2(h.kwh)/CFG.CAR,0],ac:["AC hours of the same energy",h=>h.kwh/CFG.AC,0],coal:["Coal burned (kg)",h=>h.kwh*CFG.COAL,0],saved:["Energy saved vs last month (kWh)",h=>h.saved,0],co2s:["CO₂ avoided vs last month (kg)",h=>h.saved==null?null:co2(h.saved),0]};
 
@@ -107,7 +108,7 @@ function hero(){
   $("lede").textContent="This is the first month on record, so it is our baseline. Savings will show from next month."}
  $("tot").textContent=nf(tot)+" kWh";$("totm").textContent=`${nf(tot/res,1)} kWh per resident on average, across ${nf(res)} residents`;
  const w1=win("Single","wn","wm"),w2=win("Double","wn2","wm2");let w=w1||w2;WL=[];if(w1)WL.push(["single occupancy",w1.hostel]);if(w2)WL.push(["double occupancy",w2.hostel]);
- if(!w){w=D.slice().sort((a,b)=>a.rate-b.rate)[0];$("wn").textContent=w.hostel;$("wm").textContent=`${nf(w.rate,1)} kWh per resident`;$("wn").closest(".card").style.display="";WL=[["lowest use per resident",w.hostel]]}
+ if(!w){w=D.slice().sort((a,b)=>a.rate-b.rate)[0];$("wn").textContent=w.hostel;$("wm").textContent=`${nf(w.rate,1)} kWh per resident`;$("wn").closest(".card").style.display="";$("wn").closest(".card").querySelector("small").textContent="Winner, lowest use per resident";WL=[["lowest use per resident",w.hostel]]}
  const mi=has?D.filter(x=>x.pct!=null).sort((a,b)=>a.pct-b.pct)[0]:null;$("mic").style.display=mi?"":"none";
  if(mi){$("min").textContent=mi.hostel;$("mim").textContent=`${nf(Math.abs(mi.pct),1)}% ${mi.pct<=0?"less":"more"} energy per resident than last month`;WL.push(["most improved",mi.hostel])}
  $("months").innerHTML=months.length<2?"":months.map(m=>`<button data-mo="${m}" aria-pressed="${m===month}">${mName(m)}</button>`).join("");
