@@ -18,6 +18,10 @@ const CFG={
   AC:1.5,       // kWh used by a 1.5-ton AC in one hour
   COAL:0.7,     // kg of coal burned to generate one kWh
 
+  // Tag shown before each hostel name in the leaderboard. Use "Girls" or "Boys".
+  // The number is the hostel number (1 = Hostel 1).
+  HOSTEL_TYPE:{1:"Girls",2:"Boys",3:"Boys",4:"Girls",5:"Girls",6:"Girls",7:"Boys",8:"Boys"},
+
   // Footer names
   SENIORS:["Azeem","Govind","Pankhuri","Sanchit"],
   JUNIORS:["Radha","Sreehitha","Sukhvinder","Vishwas"]

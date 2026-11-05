@@ -89,6 +89,7 @@ function calc(m){const i=months.indexOf(m),pm=i>0?months[i-1]:null;
  return rows.filter(r=>r.month===m).map(r=>{const p=pm&&rows.find(x=>x.month===pm&&x.hostel===r.hostel),rate=r.kwh/r.res;
   return{...r,rate,room:r.kwh/r.rooms,pm,saved:p?(p.kwh/p.res-rate)*r.res:null,pct:p?(rate/(p.kwh/p.res)-1)*100:null}})}
 const co2=k=>k*CFG.EF;
+const tag=n=>{const g=(CFG.HOSTEL_TYPE||{})[(n.match(/\d+/)||[])[0]];return g?`<span class="tag ${g.toLowerCase()}">${g}</span>`:""};
 const eqs=k=>[[nf(co2(k)),"kg of CO₂"],[nf(co2(k)/CFG.TREE,1),"trees needed for a year to absorb it"],[nf(co2(k)/CFG.CAR),"km of petrol car travel"],[nf(k/CFG.PHONE),"phone charges"],[nf(k/CFG.AC),"hours of a 1.5-ton AC"],[nf(k*CFG.COAL),"kg of coal burned"]];
 const PARAMS={rate:["Energy used per resident (kWh)",h=>h.rate,1],kwh:["Total energy used (kWh)",h=>h.kwh,0],co2:["CO₂ emitted (kg)",h=>co2(h.kwh),0],trees:["Trees to absorb it for a year",h=>co2(h.kwh)/CFG.TREE,1],car:["Car km with the same CO₂",h=>co2(h.kwh)/CFG.CAR,0],ac:["AC hours of the same energy",h=>h.kwh/CFG.AC,0],coal:["Coal burned (kg)",h=>h.kwh*CFG.COAL,0],saved:["Energy saved vs last month (kWh)",h=>h.saved,0],co2s:["CO₂ avoided vs last month (kg)",h=>h.saved==null?null:co2(h.saved),0]};
 
@@ -120,7 +121,7 @@ function board(has){
    :m==="room"?`<b>${nf(co2(v),1)} kg of CO₂</b> per room this month.`
    :`<b>${nf(co2(m==="rate"?v:v/h.res*h.res),m==="rate"?1:0)} kg of CO₂</b> ${m==="rate"?"per resident":"emitted"} this month, about <b>${nf(m==="rate"?v/CFG.AC:v/CFG.AC,0)} AC hours</b> of energy.`;
   return `<div class="row ${h.hostel===sel?"sel":""}" tabindex="0" role="button" aria-expanded="${h.hostel===sel}" data-h="${h.hostel}"><div class="rank">${i+1}</div>
-   <div><div class="top"><span class="nm">${h.hostel}</span><span class="big ${neg?"neg":""}">${val}</span></div><div class="trk"><div class="bar ${neg?"neg":""}" data-w="${Math.max(Math.abs(v)/mx*100,2)}"></div></div><div class="mean">${mean}</div></div>
+   <div><div class="top"><span class="nm">${tag(h.hostel)}${h.hostel}</span><span class="big ${neg?"neg":""}">${val}</span></div><div class="trk"><div class="bar ${neg?"neg":""}" data-w="${Math.max(Math.abs(v)/mx*100,2)}"></div></div><div class="mean">${mean}</div></div>
    <div class="det"><span>Total use<b>${nf(h.kwh)} kWh</b></span><span>Per resident<b>${nf(h.rate,1)} kWh</b></span><span>Rooms<b>${nf(h.rooms)}</b></span><span>Residents<b>${nf(h.res)}</b></span><span>Vs last month<b>${h.pct==null?"n/a":(h.pct>0?"+":"")+nf(h.pct,1)+"% per resident"}</b></span></div></div>`}).join("");
  requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".bar").forEach(b=>b.style.width=b.dataset.w+"%")))}
 
