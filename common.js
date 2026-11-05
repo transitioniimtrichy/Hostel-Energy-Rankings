@@ -7,7 +7,7 @@ function renderFooter(win){
   const fb=CFG.FEEDBACK_URL?`<a href="${CFG.FEEDBACK_URL}" target="_blank" rel="noopener">Feedback form</a>`:`<span class="soon">Feedback form (coming soon)</span>`;
   document.getElementById("ft").innerHTML=`<div class="w fg">
    <div><div class="f"><img src="${LOGO}" alt=""><div><h2>Transition</h2><p>The Sustainability &amp; Climate Strategy SIG, IIM Trichy</p></div></div>
-   ${win?`<div class="wf"><small>Hostel winner, ${win.month}</small><b>${win.name}</b></div>`:""}</div>
+   ${win?`<div class="wf"><small>Hostel winners, ${win.month}</small>${win.list.map(([l,n])=>`<div><b>${n}</b> <span>${l}</span></div>`).join("")}</div>`:""}</div>
    <div><h4>Senior members</h4><ul>${li(CFG.SENIORS)}</ul></div>
    <div><h4>Junior members</h4><ul>${li(CFG.JUNIORS)}</ul></div>
    <div><h4>Links</h4><nav><a href="index.html">Hostel energy ranking</a><a href="conversions.html">Conversions and method</a>${fb}</nav></div></div>`;

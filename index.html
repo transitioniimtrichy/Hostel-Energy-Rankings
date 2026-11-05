@@ -29,8 +29,9 @@
     <h1 id="h1"></h1><p class="lede" id="lede"></p>
     <div class="cards">
       <div class="card"><small>Overall consumption</small><div class="n" id="tot"></div><small id="totm"></small></div>
-      <div class="card win"><svg width="62" height="62" viewBox="0 0 62 62" aria-hidden="true"><circle cx="31" cy="31" r="30" fill="#065223"/><path d="M20 16h22v9a11 11 0 0 1-22 0zM20 19h-5v3a7 7 0 0 0 7 7M42 19h5v3a7 7 0 0 1-7 7M31 36v7M24 46h14" fill="none" stroke="#D0F24C" stroke-width="3" stroke-linecap="round"/></svg>
-        <div><small>Winner: lowest use per resident</small><div class="n" id="wn"></div><small id="wm"></small></div></div>
+      <div class="card win"><div><small>Winner, single-occupancy hostels</small><div class="n" id="wn"></div><small id="wm"></small></div></div>
+      <div class="card win"><div><small>Winner, double-occupancy hostels</small><div class="n" id="wn2"></div><small id="wm2"></small></div></div>
+      <div class="card win" id="mic" style="display:none"><div><small>Most improved this month</small><div class="n" id="min"></div><small id="mim"></small></div></div>
     </div>
   </div>
 </header>
@@ -58,7 +59,7 @@
     
   </section>
 
-  <section><div class="how"><h3>How we calculate this</h3><p>The winner is the hostel with the lowest energy use per resident, so bigger hostels are not at a disadvantage. The <a href="conversions.html">Conversions and method</a> page shows every formula behind the CO₂, tree, car, phone, AC and coal comparisons.</p></div></section>
+  <section><div class="how"><h3>How we calculate this</h3><p>Hostels are ranked within their own occupancy type (single or double), because a room shared by two people naturally uses less energy per person. The winner of each type is the hostel with the lowest energy use per resident. From the second month, a Most improved award goes to the hostel that cut its own use per resident the most. The <a href="conversions.html">Conversions and method</a> page shows every formula behind the CO₂, tree, car, phone, AC and coal comparisons.</p></div></section>
 </main>
 
 <footer id="ft"></footer>
@@ -67,7 +68,7 @@
 <script src="common.js"></script>
 <script>
 /* Settings are in config.js */
-const SAMPLE=[["Hostel 1",60,118,5050],["Hostel 2",50,92,4150],["Hostel 3",80,140,6700],["Hostel 4",40,80,3200],["Hostel 5",90,150,7500],["Hostel 6",36,60,2700],["Hostel 7",64,120,5500],["Hostel 8",55,100,4700]].map(([hostel,rooms,res,kwh])=>({month:"2026-10",hostel,rooms,res,kwh}));
+const SAMPLE=[["Hostel 1",70,71,3600],["Hostel 2",69,137,4800],["Hostel 3",70,137,4900],["Hostel 4",70,70,3300],["Hostel 5",70,74,3700],["Hostel 6",70,139,5100],["Hostel 7",61,116,4200],["Hostel 8",323,325,13800]].map(([hostel,rooms,res,kwh])=>({month:"2026-10",hostel,rooms,res,kwh}));
 let rows=[],months=[],month="",metric="rate",sel=null,param="rate",D=[];
 const $=id=>document.getElementById(id),nf=(n,d=0)=>n.toLocaleString("en-IN",{maximumFractionDigits:d,minimumFractionDigits:d});
 const mName=m=>{const[y,o]=m.split("-");return new Date(y,o-1).toLocaleString("en-IN",{month:"long",year:"numeric"})};
@@ -89,6 +90,8 @@ function calc(m){const i=months.indexOf(m),pm=i>0?months[i-1]:null;
  return rows.filter(r=>r.month===m).map(r=>{const p=pm&&rows.find(x=>x.month===pm&&x.hostel===r.hostel),rate=r.kwh/r.res;
   return{...r,rate,room:r.kwh/r.rooms,pm,saved:p?(p.kwh/p.res-rate)*r.res:null,pct:p?(rate/(p.kwh/p.res)-1)*100:null}})}
 const co2=k=>k*CFG.EF;
+var WL=[];const typeOf=n=>(CFG.ROOM_TYPE||{})[(n.match(/\d+/)||[])[0]];
+function win(t,idn,idm){const g=D.filter(x=>typeOf(x.hostel)===t);const c=$(idn).closest(".card");if(!g.length){c.style.display="none";return null}c.style.display="";const w=g.slice().sort((a,b)=>a.rate-b.rate)[0],avg=g.reduce((s,x)=>s+x.kwh,0)/g.reduce((s,x)=>s+x.res,0);$(idn).textContent=w.hostel;$(idm).textContent=`${nf(w.rate,1)} kWh per resident, ${nf((1-w.rate/avg)*100)}% below the ${t.toLowerCase()}-occupancy average`;return w}
 const tag=n=>{const g=(CFG.HOSTEL_TYPE||{})[(n.match(/\d+/)||[])[0]];return g?`<span class="tag ${g.toLowerCase()}">${g}</span>`:""};
 const eqs=k=>[[nf(co2(k)),"kg of CO₂"],[nf(co2(k)/CFG.TREE,1),"trees needed for a year to absorb it"],[nf(co2(k)/CFG.CAR),"km of petrol car travel"],[nf(k/CFG.PHONE),"phone charges"],[nf(k/CFG.AC),"hours of a 1.5-ton AC"],[nf(k*CFG.COAL),"kg of coal burned"]];
 const PARAMS={rate:["Energy used per resident (kWh)",h=>h.rate,1],kwh:["Total energy used (kWh)",h=>h.kwh,0],co2:["CO₂ emitted (kg)",h=>co2(h.kwh),0],trees:["Trees to absorb it for a year",h=>co2(h.kwh)/CFG.TREE,1],car:["Car km with the same CO₂",h=>co2(h.kwh)/CFG.CAR,0],ac:["AC hours of the same energy",h=>h.kwh/CFG.AC,0],coal:["Coal burned (kg)",h=>h.kwh*CFG.COAL,0],saved:["Energy saved vs last month (kWh)",h=>h.saved,0],co2s:["CO₂ avoided vs last month (kg)",h=>h.saved==null?null:co2(h.saved),0]};
@@ -103,8 +106,10 @@ function hero(){
   $("h1").innerHTML=`Hostels emitted <em>${nf(co2(tot))} kg</em> of CO₂ in ${mName(month)}`;
   $("lede").textContent="This is the first month on record, so it is our baseline. Savings will show from next month."}
  $("tot").textContent=nf(tot)+" kWh";$("totm").textContent=`${nf(tot/res,1)} kWh per resident on average, across ${nf(res)} residents`;
- const w=D.slice().sort((a,b)=>a.rate-b.rate)[0],avg=tot/res;
- $("wn").textContent=w.hostel;$("wm").textContent=`${nf(w.rate,1)} kWh per resident, ${nf((1-w.rate/avg)*100)}% below the average`;
+ const w1=win("Single","wn","wm"),w2=win("Double","wn2","wm2");let w=w1||w2;WL=[];if(w1)WL.push(["single occupancy",w1.hostel]);if(w2)WL.push(["double occupancy",w2.hostel]);
+ if(!w){w=D.slice().sort((a,b)=>a.rate-b.rate)[0];$("wn").textContent=w.hostel;$("wm").textContent=`${nf(w.rate,1)} kWh per resident`;$("wn").closest(".card").style.display="";WL=[["lowest use per resident",w.hostel]]}
+ const mi=has?D.filter(x=>x.pct!=null).sort((a,b)=>a.pct-b.pct)[0]:null;$("mic").style.display=mi?"":"none";
+ if(mi){$("min").textContent=mi.hostel;$("mim").textContent=`${nf(Math.abs(mi.pct),1)}% ${mi.pct<=0?"less":"more"} energy per resident than last month`;WL.push(["most improved",mi.hostel])}
  $("months").innerHTML=months.length<2?"":months.map(m=>`<button data-mo="${m}" aria-pressed="${m===month}">${mName(m)}</button>`).join("");
  return w}
 
@@ -113,16 +118,18 @@ function board(has){
  document.querySelectorAll("#seg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===m));
  if(m==="saved"&&!has){$("bs").textContent="Energy saved compares each hostel with its own use in the previous month.";$("board").innerHTML='<div class="notice" style="margin:0">This is the first month on record, so there is nothing to compare with yet. Energy saved will appear here once next month\'s data is added.</div>';return}
  const list=D.filter(x=>x[key]!=null).sort((a,b)=>desc?b[key]-a[key]:a[key]-b[key]);
- $("bs").textContent={saved:`Energy saved since ${pm?mName(pm):"last month"}, adjusted for residents. Higher is better.`,rate:"Energy used per resident. Lower is better.",kwh:"Total energy used. Lower is better.",room:"Energy used per room. Lower is better."}[m]+" Select a hostel for details.";
+ $("bs").textContent={saved:`Energy saved since ${pm?mName(pm):"last month"}, adjusted for residents. Higher is better.`,rate:"Energy used per resident, ranked within single and double occupancy hostels. Lower is better.",kwh:"Total energy used. Lower is better.",room:"Energy used per room, ranked within single and double occupancy hostels. Lower is better."}[m]+" Select a hostel for details.";
  const mx=Math.max(...list.map(x=>Math.abs(x[key])),1);
- $("board").innerHTML=list.map((h,i)=>{const v=h[key],neg=m==="saved"&&v<0;
+ const rowf=(h,i)=>{const v=h[key],neg=m==="saved"&&v<0;
   const val=m==="saved"?`${v>=0?"+":"−"}${nf(Math.abs(v))} <small>kWh ${v>=0?"saved":"extra"}</small>`:m==="rate"?`${nf(v,1)} <small>kWh per resident</small>`:m==="room"?`${nf(v,1)} <small>kWh per room</small>`:`${nf(v)} <small>kWh</small>`;
   const mean=m==="saved"?(v>=0?`<b>${nf(co2(v))} kg of CO₂</b> avoided, as much as <b>${nf(co2(v)/CFG.TREE,1)} trees</b> absorb in a year, or <b>${nf(co2(v)/CFG.CAR)} km</b> of car travel.`:`<b>${nf(co2(-v))} kg</b> more CO₂ than last month, about <b>${nf(-v/CFG.AC)} hours</b> of AC.`)
    :m==="room"?`<b>${nf(co2(v),1)} kg of CO₂</b> per room this month.`
    :`<b>${nf(co2(m==="rate"?v:v/h.res*h.res),m==="rate"?1:0)} kg of CO₂</b> ${m==="rate"?"per resident":"emitted"} this month, about <b>${nf(m==="rate"?v/CFG.AC:v/CFG.AC,0)} AC hours</b> of energy.`;
   return `<div class="row ${h.hostel===sel?"sel":""}" tabindex="0" role="button" aria-expanded="${h.hostel===sel}" data-h="${h.hostel}"><div class="rank">${i+1}</div>
    <div><div class="top"><span class="nm">${tag(h.hostel)}${h.hostel}</span><span class="big ${neg?"neg":""}">${val}</span></div><div class="trk"><div class="bar ${neg?"neg":""}" data-w="${Math.max(Math.abs(v)/mx*100,2)}"></div></div><div class="mean">${mean}</div></div>
-   <div class="det"><span>Total use<b>${nf(h.kwh)} kWh</b></span><span>Per resident<b>${nf(h.rate,1)} kWh</b></span><span>Rooms<b>${nf(h.rooms)}</b></span><span>Residents<b>${nf(h.res)}</b></span><span>Vs last month<b>${h.pct==null?"n/a":(h.pct>0?"+":"")+nf(h.pct,1)+"% per resident"}</b></span></div></div>`}).join("");
+   <div class="det"><span>Total use<b>${nf(h.kwh)} kWh</b></span><span>Per resident<b>${nf(h.rate,1)} kWh</b></span><span>Room type<b>${typeOf(h.hostel)||"n/a"}</b></span><span>Rooms<b>${nf(h.rooms)}</b></span><span>Residents<b>${nf(h.res)}</b></span><span>Vs last month<b>${h.pct==null?"n/a":(h.pct>0?"+":"")+nf(h.pct,1)+"% per resident"}</b></span></div></div>`};
+ const grp=(m==="rate"||m==="room")&&list.some(x=>typeOf(x.hostel));
+ $("board").innerHTML=grp?["Single","Double"].map(t=>{const g=list.filter(x=>typeOf(x.hostel)===t);return g.length?`<div class="gh">${t} occupancy hostels</div>`+g.map(rowf).join(""):""}).join(""):list.map(rowf).join("");
  requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".bar").forEach(b=>b.style.width=b.dataset.w+"%")))}
 
 const G="#065223",GR="#B5C79F",AX="#58694F";
@@ -150,7 +157,7 @@ function analysis(){
   const p=pts(sel);if(p.length){s+=`<polyline points="${p.map(q=>q[0]+","+q[1]).join(" ")}" fill="none" stroke="${G}" stroke-width="4" stroke-linejoin="round"/>`+p.map(q=>`<circle cx="${q[0]}" cy="${q[1]}" r="5.5" fill="${G}"><title>${sel}, ${mShort(q[3])}: ${nf(q[2],1)} kWh per resident</title></circle><text x="${q[0]}" y="${q[1]-12}" text-anchor="middle" font-size="12.5" font-weight="700">${nf(q[2],1)}</text>`).join("")+`<text x="${p[p.length-1][0]+12}" y="${p[p.length-1][1]+4}" font-size="13" font-weight="700" fill="${G}">${sel}</text>`}
   $("c2").innerHTML=s+"</svg>"}}
 
-function render(){D=calc(month);const has=D.some(x=>x.saved!=null),w=hero();if(!D.find(x=>x.hostel===sel))sel=w.hostel;board(has);analysis();renderFooter({month:mName(month),name:w.hostel})}
+function render(){D=calc(month);const has=D.some(x=>x.saved!=null),w=hero();if(!D.find(x=>x.hostel===sel))sel=w.hostel;board(has);analysis();renderFooter({month:mName(month),list:WL})}
 function pick(e){if(e.type==="keydown"&&e.key!=="Enter"&&e.key!==" ")return;const t=e.target.closest("[data-h]");if(!t)return;e.preventDefault();sel=t.dataset.h;render()}
 $("months").addEventListener("click",e=>{const b=e.target.closest("button");if(b){month=b.dataset.mo;sel=null;render()}});
 $("seg").addEventListener("click",e=>{const b=e.target.closest("button");if(b){metric=b.dataset.m;render()}});

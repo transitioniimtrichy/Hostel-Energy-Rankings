@@ -22,6 +22,9 @@ const CFG={
   // The number is the hostel number (1 = Hostel 1).
   HOSTEL_TYPE:{1:"Girls",2:"Boys",3:"Boys",4:"Girls",5:"Girls",6:"Girls",7:"Boys",8:"Boys"},
 
+  // Room type of each hostel ("Single" or "Double"). Hostels are ranked within their own type.
+  ROOM_TYPE:{1:"Single",2:"Double",3:"Double",4:"Single",5:"Single",6:"Double",7:"Double",8:"Single"},
+
   // Footer names
   SENIORS:["Azeem","Govind","Pankhuri","Sanchit"],
   JUNIORS:["Radha","Sreehitha","Sukhvinder","Vishwas"]
